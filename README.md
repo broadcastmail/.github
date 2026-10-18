@@ -6,7 +6,7 @@ Broadcast email with Supabase apps. Connect your database, send to your users.
 
 | Repo | Description |
 |---|---|
-| [broadcastmail-frontend](https://github.com/broadcastmail/broadcastmail-frontend) | Next.js 16 frontend |
+| [broadcastmail-frontend](https://github.com/broadcastmail/broadcastmail-frontend) (private) | Next.js 16 frontend |
 | [broadcastmail-api](https://github.com/broadcastmail/brodcastmail-api) | Spring Boot HTTP API |
 | [broadcastmail-worker](https://github.com/broadcastmail/broadcastmail-worker) | Async campaign processor |
 | [broadcastmail-webhooks](https://github.com/broadcastmail/broadcastmail-webhooks) | Stripe and Resend webhooks |
