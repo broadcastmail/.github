@@ -18,4 +18,4 @@ Broadcast email for Supabase apps. Connect your database, send to your users.
 
 ## Links
 
-[Website](https://broadcastmail.com)
+[Website](https://broadcastmail.com) (under construction)
