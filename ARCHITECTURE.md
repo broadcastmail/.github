@@ -1,6 +1,12 @@
 # Architecture
+- [System overview](#overview)
+- [Campaign lifecycle](#campaign-lifecycle)
+- [Reliable delivery](#reliable-delivery-outbox-pattern)
+- [Plan enforcement](#plan-enforcement)
+- [Database](#database)
 
-## Overveiw
+
+## Overview
 C2 system diagram — services, external dependencies, data stores
 <img width="3088" height="1051" alt="broadcastmai-architecture" src="https://github.com/user-attachments/assets/38b2f74a-bb6c-4bb5-8cc2-7a3870e45d16" />
 
