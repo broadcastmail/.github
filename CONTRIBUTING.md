@@ -30,7 +30,7 @@ cd <repo>
 
 See [DEVELOPERS.md](DEVELOPERS.md) in each repo for full local setup.
 
-## Git flow
+## Git flow (planned, not enforced yet)
 
 ![Git flow](./gitflow.png)
 
