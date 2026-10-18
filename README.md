@@ -15,7 +15,7 @@ Broadcast email with Supabase apps. Connect your database, send to your users.
 ## Architecture
 
 Modular monolith, four services, one PostgreSQL database. 
-[→ See how it's built](link to ARCHITECTURE.md)
+[→ See how it's built](../ARCHITECTURE.md)
 
 ## Links
 
