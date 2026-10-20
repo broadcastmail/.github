@@ -1,9 +1,18 @@
 # Database design
+## Contents
+- [ERD](#erd)
+- [Overview](#overview)
+- [Schema Design Decisions](#schema-design-decisions)
+- [Access Patterns](#access-patterns)
+
 
 ## Overview
 Broadcast email uses a single PostgreSQL instance hosted on Railway. All changes to
-the schema are done through Flyway migrations (Hibernate is set tp `validae` 
+the schema are done through Flyway migrations (Hibernate is set tp `validate` 
 only so it never modifies directly).
+
+## ERD
+![ERD](./ERD.png)
 
 The core principles that schema design follow:
 
