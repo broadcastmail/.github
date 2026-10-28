@@ -7,25 +7,26 @@
 - Unsubscribe page
 - Settings page
 - Landing page
+- Campaign scheduling
+- OpenAPI spec annotations
 
 ## Next
-- Sentry SDK — frontend and backend
+- Sentry SDK — frontend and backend error tracking
+- Query performance monitoring and improvement based on it
 - DigitalOcean / Azure migration from Railway
-- OpenAPI spec annotations
 - Stripe live keys smoke test
+
 
 ## Later
 
 ### Features
-- Campaign scheduling
 - CSV export
-- Retry failed recipients UI
 - Email open tracking improvements
+- Retry failed recipients UI backtracking
 
 ### Technical
 - SSE → Kafka event streaming
 - Nightly Stripe subscription sync job
-- Query performance monitoring
 - CHANGELOG.md
-- RUNBOOK.md post first incidents
+- RUNBOOK.md post-first incidents
 - Per-service DB if scaling requires it
