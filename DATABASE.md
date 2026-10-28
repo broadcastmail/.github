@@ -616,40 +616,30 @@ CREATE INDEX idx_webhook_events_unprocessed
  
 ---
 
-### unsubscribes
-### unsubscribes
+---
 
-**Writes:**
-- INSERT when the recipient clicks the unsubscribe link in any campaign
-  email — one row per email per account. — low-frequency
-  small percentage of recipients unsubscribe per campaign.
-- No UPDATE ever — unsubscribe is permanent and binary.
-  No "re-subscribe" flow in V1.
+### suppressions
 
-**Reads:**
-- SELECT WHERE account_id = ? AND email = ? — checked before
-  every recipient is added to the campaign snapshot. If a row exists,
- the recipient is silently excluded from campaign_recipients.
-  — high frequency, one check per recipient per campaign confirmation.
-  500 recipients = 500 checks per confirmation.
-- SELECT WHERE account_id = ? — Settings → Connection tab,
-  show an unsubscribed list to an account owner. — low frequency
-  only when the user visits Settings.
+Writes:
 
-**Growth:**
-One row per unsubscribed email per account. Grows slowly —
-maybe 1-2% of recipients unsubscribe per campaign. At scale:
-1,000 customers × 500 recipients × 2% = 10,000 rows total
-ever. Never a storage concern.
+- INSERT when a recipient clicks the unsubscribe link in any campaign email (reason = 'UNSUBSCRIBE'). Low-frequency — small percentage of recipients unsubscribe per campaign.
+- INSERT when Resend fires a email.bounced webhook (reason = 'BOUNCE'). Low-frequency — hard bounces are rare but must be captured immediately.
+- Both use upsert (on-conflict-do-nothing on the (account_id, email) unique constraint) — the same address can bounce across multiple campaigns without creating duplicate rows.
+- No UPDATE ever — suppression is permanent and binary. No re-subscribe or bounce-removal flow in V1.
 
-**Deletion:**
+Reads:
+
+- SELECT WHERE account_id = ? AND email = ? — checked before every recipient is added to the campaign snapshot. If a row exists, the recipient is silently excluded from campaign_recipients. High-frequency — one check per recipient per campaign confirmation. 500 recipients = 500 checks per confirmation.
+- SELECT WHERE account_id = ? — Settings → Connection tab, show suppressed addresses to the account owner with their reason. Low-frequency — only when the user visits Settings.
+
+Growth: One row per suppressed email per account. Grows slowly. Unsubscribes: ~1–2% of recipients per campaign. Bounces: ~0.5% or less at healthy sender reputation. At scale: 1,000 customers × 500 recipients × 2.5% = 12,500 rows total ever. Never a storage concern.
+
+Deletion:
+
 - CASCADE on account deletion — automatic via ON DELETE CASCADE.
 - CASCADE on connection deletion — automatic via ON DELETE CASCADE.
-- Never deleted individually — unsubscribe is permanent.
-  No "remove from unsubscribed list" action in V1.
-- Not subject to retention policy — survives campaign history
-  cleanup. Must persist forever to prevent re-emailing
-  unsubscribed recipients after campaign rows are deleted.
+- Never deleted individually — suppression is permanent. No "remove from suppressed list" action in V1.
+- Not subject to retention policy — survives campaign history cleanup. Must persist forever to prevent re-emailing suppressed recipients after campaign rows are deleted.
 
 **Indexes:**
 ```sql
