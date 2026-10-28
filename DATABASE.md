@@ -646,11 +646,14 @@ Deletion:
 -- UNIQUE constraint on (account_id, email) creates index automatically
 -- justification: SELECT WHERE account_id = ? AND email = ?
 -- on every recipient check at campaign confirm time.
--- UNIQUE also enforces one unsubscribe record per email per account
--- at DB level — no duplicate unsubscribes possible.
+-- UNIQUE also enforces one suppression record per email per account
+-- at DB level — duplicate bounces or unsubscribes across campaigns are silently ignored.
 
-CREATE INDEX idx_unsubscribes_account_id
-  ON unsubscribes(account_id);
+CREATE UNIQUE INDEX idx_suppressions_account_email
+  ON suppressions(account_id, email);
+
+CREATE INDEX idx_suppressions_account_id
+  ON suppressions(account_id);
 -- justification: SELECT WHERE account_id = ? for Settings page
 -- UNIQUE composite covers (account_id, email) but a standalone
 -- account_id index may be faster for the Settings list query
