@@ -714,4 +714,5 @@ job that runs nightly:
 | idx_campaign_recipients_status | campaign_recipients | status | Standard | Count by status for stats |
 | idx_outbox_status_next_attempt | outbox | status, next_attempt_at | Partial (WHERE status='pending') | Worker poll — only pending rows |
 | idx_webhook_events_processed | webhook_events | processed | Partial (WHERE processed=false) | Unprocessed event backlog |
-| idx_unsubscribes_account_email | unsubscribes | account_id, email | Composite | Check unsubscribe before send |
+| idx_suppressions_account_email | suppressions | account_id, email | Unique composite | Recipient check before send + upsert dedup |
+| idx_suppressions_account_id | suppressions | account_id | Standard | Settings page — list all suppressions for account |
