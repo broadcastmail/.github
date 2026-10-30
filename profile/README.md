@@ -13,7 +13,9 @@ Broadcast email for Supabase apps. Connect your database, send to your users.
 ## Docs
 
 - [Architecture](../ARCHITECTURE.md)
+- [Decisions](../DECISIONS.md)
 - [Database](../DATABASE.md)
+- [Security](../SECURITY.md)
 - [Contributing](../CONTRIBUTING.md)
 - [Roadmap](../ROADMAP.md)
 
