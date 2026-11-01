@@ -3,7 +3,7 @@
 - [Campaign lifecycle](#campaign-lifecycle)
 - [Reliable delivery](#reliable-delivery-outbox-pattern)
 - [Plan enforcement](#plan-enforcement)
-- [Database](#database)
+- [Onboarding](#onboarding)
 
 
 ## Overview
@@ -22,3 +22,6 @@ The outbox pattern claims rows before sending. Idempotent sends when multiple in
 C3 Graph - Behaviour per plan is defined once, enforced via Facade. Adding a new plan tier means one new strategy class and one enum constant. No existing code changes.
 
 <img width="500" height="850" alt="broadcast-plan-enforcement" src="https://github.com/user-attachments/assets/ca839b05-d9fb-4c26-a2dc-67bbb74ede1b" />
+
+## Onboarding
+[See here...](./ONBOARDING.md)
