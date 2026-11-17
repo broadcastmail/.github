@@ -31,7 +31,7 @@ git remote add upstream https://github.com/broadcastmail/<repo>.git
 
 See [DEVELOPERS.md](DEVELOPERS.md) in each repo for full local setup.
 
-## Git flow (planned, not enforced yet)
+## Git flow
 
 ![Git flow](./gitflow.png)
 
