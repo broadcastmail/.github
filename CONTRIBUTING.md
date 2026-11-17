@@ -23,9 +23,10 @@
 ## Getting started
 
 ```bash
-git clone https://github.com/broadcastmail/<repo>.git
+git clone https://github.com/<your-username>/<repo>.git
 cd <repo>
-./mvnw clean verify
+git remote add upstream https://github.com/broadcastmail/<repo>.git
+./mvnw clean verify -Dgroups='!local'
 ```
 
 See [DEVELOPERS.md](DEVELOPERS.md) in each repo for full local setup.
@@ -64,6 +65,8 @@ One line, imperative mood, lowercase. No period at the end.
 
 ## Pull requests
 
+- Fork the repo and branch from `dev` on your fork
+- Keep your fork up to date: `git fetch upstream && git rebase upstream/dev`
 - One PR per feature or fix
 - PR title follows commit convention
 - Link the issue: `Closes #N`
