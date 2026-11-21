@@ -1,8 +1,8 @@
 ## Onboarding
 
 ## Graph 1a - C4 Level 3 State validation and user lookup
-Question validated: does the callback validate state before touching any user data, and does an existing user always bypass onboarding?
-```mermaid
+Question validated: does the callback check state and redirect origin before it exchanges the code or touches any user data, and does a project that's already connected always skip onboarding?
+ ```mermaid
 flowchart TD
     A["POST /oauth/supabase/callback"] --> B{"state matches +<br/>redirect origin allowed?"}
     B -- no --> E1["401 / 400 — nothing touched"]
@@ -17,8 +17,19 @@ flowchart TD
 ```
 
 ## Graph 1b - C4 Level 3 Project count determines onboarding path
-Question validated: is the partial session always invalidated before the full session is created, so two sessions can never coexist?
-<img width="1154" height="1762" alt="mermaid-diagram-2026-10-30-162946" src="https://github.com/user-attachments/assets/28690a4a-d030-4850-b10f-d7a36d5f963d" />
+Question validated: is the partial session invalidated only after the full session is created, so a failed project selection can be retried without redoing OAuth?
+```mermaid
+flowchart TD
+    A["from Graph 1a<br/>new account or reconfigure"] --> B{"how many projects?"}
+    B -- one --> S["create full session<br/>(reconfigure: reuse role if same project)"]
+    S --> O1["200 NEW_USER / RECONFIGURE<br/>+ onboardingToken"]
+    B -- many --> P["createPartial<br/>stores project list, 30m TTL"]
+    P --> UI["/onboarding/select-project<br/>GET /projects"]
+    UI -- "POST /select-project" --> F["create full session<br/>(same setup as 'one')"]
+    F --> I["invalidatePartial"]
+    I --> O2["set onboarding_session cookie<br/>→ CONFIRM_SCHEMA"]
+    F -. "setup fails" .-> K["partial kept → user can retry pick"]
+```
 
 
 ## Graph 2 — Backend enforces step preconditions, not the frontend
