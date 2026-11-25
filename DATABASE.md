@@ -66,12 +66,15 @@ table with potentially thousands of rows on every dashboard load would
 be slow. These counters are incremented atomically as webhook events
 are processed, so a small normalization tradeoff for significantly
 better read performance on the dashboard.
-**Why `webhook_events.campaign_recipient_id` is nullable:**
-Resend occasionally fires webhook events for emails we can't match back
-to a recipient, e.g., if the recipient row was deleted during
-the retention cleanup window, or if Resend fires an event for a test
-email sent during onboarding. Making this nullable means we store the
-raw event regardless and don't lose data, even when the match fails.
+**Why `webhook_events` has no link to `campaign_recipients`:**
+Resend fires events for emails we can't match back to a recipient, e.g.
+when retention already deleted the recipient row, or for a test send
+(never in `campaign_recipients`). The raw event is stored regardless.
+The link is already in the payload: `raw_payload->'data'->>'email_id'`
+equals `campaign_recipients.resend_message_id` while the recipient
+exists. A `campaign_recipient_id` column existed until V28 but was
+never filled, and its FK without `ON DELETE` would have blocked
+retention, so it was dropped.
 
 **Why `unsubscribes` is a separate table not a column on `campaign_recipients`:**
 An unsubscribe is permanent and applies to all future campaigns, not
@@ -346,7 +349,7 @@ happens atomically in the same @Transactional block as the recipient
 - Nightly retention cleanup job — primary deletion mechanism.
   Deletes campaigns WHERE sent_at < retention_cutoff for plan.
   Free = 7 days, Pro = 90 days. Cascade cleans campaign_filters,
-  campaign_recipients, outbox, webhook_events automatically.
+  campaign_recipients, outbox automatically (not webhook_events).
 - 
 **Indexes:**
  ```sql
@@ -474,7 +477,8 @@ Most write-heavy table in the schema. At 1,000 customers:
 **Deletion:**
 - Nightly retention cleanup job — primary deletion mechanism.
   Deletes WHERE campaign.sent_at < retention_cutoff for plan.
-  Cascade from campaign deletion handles outbox + webhook_events.
+  Cascade from campaign deletion handles outbox (webhook_events
+  has no FK to recipients and is not touched).
 - CASCADE on campaign deletion — automatic.
 - CASCADE on connection deletion → campaigns → recipients.
 - CASCADE on account deletion — automatic.
@@ -594,9 +598,8 @@ retention cleanup is critical here.
 - Nightly retention cleanup job — primary deletion mechanism.
   DELETE WHERE created_at < retention_cutoff for plan.
   Free = 7 days, Pro = 90 days.
-- Independent of campaign_recipients deletion — no CASCADE.
-  campaign_recipient_id set to NULL when recipient deleted,
-  row stays until own retention window expires.
+- Independent of campaign_recipients deletion — no FK to it, so
+  deleting a campaign or recipient leaves its events in place.
 - No other deletion paths.
 
 **Indexes:**
