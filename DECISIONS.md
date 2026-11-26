@@ -36,6 +36,20 @@ PayFlow used package-by-layer because it had one deep domain (payments) with sig
 
 ---
 
+## Data access: queries live with their entity, in common
+
+*Decided 2026-11-26. Narrows "package-by-feature" above: features still own their controller, service and domain logic, but data access for the shared schema lives in `broadcastmail-common`.*
+
+Every query on a table lives in common's repository for that entity, even when only one service calls it. The exception is an entity only one service has, such as the api's `OAuthToken`, which keeps its entity and repository in that service.
+
+The other option was service-specific queries in the service: an api-side repository interface per feature, like the former `RecipientHistoryRepository`. That's the standard when each service has its own database, because then each service owns its tables and its queries come with them. Here the services share one schema, and common owns it through the Flyway migrations. A query changes when the schema changes, not when the calling service does (Common Closure Principle). Keeping queries next to the migrations means one place to look per table, and common's build catches a migration that breaks a query, instead of a service finding out at startup. It also avoids extra interfaces: one repository per entity, as Spring Data intends. Extending common's repository inside a service isn't an option either, because two beans of the same repository type break injection.
+
+The cost is a common release for a query only one service uses. On a solo project that already installs and deploys common routinely, that's small.
+
+**If the database is ever split per service, this flips: each service then owns its tables and the queries on them, and they move out of common together.**
+
+---
+
 ## Outbox pattern over WAL CDC
 
 Campaign send requests write to an `outbox_entries` table in the same transaction as the campaign state change. A separate poller picks up entries and calls Resend.

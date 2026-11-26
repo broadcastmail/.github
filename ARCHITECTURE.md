@@ -3,6 +3,7 @@
 - [Campaign lifecycle](#campaign-lifecycle)
 - [Reliable delivery](#reliable-delivery-outbox-pattern)
 - [Plan enforcement](#plan-enforcement)
+- [Data access](#data-access)
 - [Onboarding](#onboarding)
 
 
@@ -22,6 +23,11 @@ The outbox pattern claims rows before sending. Idempotent sends when multiple in
 C3 Graph - Behaviour per plan is defined once, enforced via Facade. Adding a new plan tier means one new strategy class and one enum constant. No existing code changes.
 
 <img width="500" height="850" alt="broadcast-plan-enforcement" src="https://github.com/user-attachments/assets/ca839b05-d9fb-4c26-a2dc-67bbb74ede1b" />
+
+## Data access
+All services share one Postgres schema, owned by `broadcastmail-common` (entities + Flyway migrations). Every query lives in common's repository for its entity, even if only one service calls it: queries change when the schema changes, so they sit next to the migrations, and common's build catches a migration that breaks one. Services contain logic, not data access. Exception: an entity only one service has (e.g. the api's `OAuthToken`) keeps its entity and repository in that service. [Why](./DECISIONS.md#data-access-queries-live-with-their-entity-in-common)
+
+**If the database is ever split per service, this flips: each service then owns its tables and the queries on them, and they move out of common together.**
 
 ## Onboarding
 [See here...](./ONBOARDING.md)
